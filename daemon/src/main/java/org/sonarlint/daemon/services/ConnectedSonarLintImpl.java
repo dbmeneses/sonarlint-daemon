@@ -19,7 +19,6 @@
  */
 package org.sonarlint.daemon.services;
 
-import io.grpc.StatusException;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +75,7 @@ public class ConnectedSonarLintImpl implements ConnectedSonarLint {
       response.onCompleted();
     } catch (Exception e) {
       logger.error("Error registering", e);
-      response.onError(new StatusException(io.grpc.Status.INTERNAL.withDescription(e.getMessage()).withCause(e)));
+      response.onError(e);
     }
   }
 
@@ -101,7 +100,7 @@ public class ConnectedSonarLintImpl implements ConnectedSonarLint {
       response.onCompleted();
     } catch (Exception e) {
       logger.error("Error analyzing", e);
-      response.onError(new StatusException(io.grpc.Status.INTERNAL.withDescription(e.getMessage()).withCause(e)));
+      response.onError(e);
     }
   }
 
@@ -119,7 +118,7 @@ public class ConnectedSonarLintImpl implements ConnectedSonarLint {
       response.onCompleted();
     } catch (Exception e) {
       logger.error("update", e);
-      response.onError(new StatusException(io.grpc.Status.INTERNAL.withDescription(e.getMessage()).withCause(e)));
+      response.onError(e);
     }
   }
 
@@ -159,7 +158,7 @@ public class ConnectedSonarLintImpl implements ConnectedSonarLint {
       response.onCompleted();
     } catch (Exception e) {
       logger.error("status", e);
-      response.onError(new StatusException(io.grpc.Status.INTERNAL.withDescription(e.getMessage()).withCause(e)));
+      response.onError(e);
     }
   }
 
@@ -172,7 +171,7 @@ public class ConnectedSonarLintImpl implements ConnectedSonarLint {
       response.onCompleted();
     } catch (Exception e) {
       logger.error("updateModule", e);
-      response.onError(new StatusException(io.grpc.Status.INTERNAL.withDescription(e.getMessage()).withCause(e)));
+      response.onError(e);
     }
   }
 }

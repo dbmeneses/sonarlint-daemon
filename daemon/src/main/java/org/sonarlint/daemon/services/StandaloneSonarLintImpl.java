@@ -19,7 +19,6 @@
  */
 package org.sonarlint.daemon.services;
 
-import io.grpc.StatusException;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +53,7 @@ public class StandaloneSonarLintImpl extends AbstractSonarLint implements Standa
       engine.stop();
       engine = null;
     }
-    
+
     try {
       Builder builder = StandaloneGlobalConfiguration.builder();
 
@@ -71,13 +70,13 @@ public class StandaloneSonarLintImpl extends AbstractSonarLint implements Standa
       response.onCompleted();
     } catch (Exception e) {
       logger.error("Error registering", e);
-      response.onError(new StatusException(io.grpc.Status.INTERNAL.withDescription(e.getMessage()).withCause(e)));
+      response.onError(e);
     }
   }
 
   @Override
   public void analyze(AnalysisReq requestConfig, StreamObserver<Issue> response) {
-    if (engine == null ) {
+    if (engine == null) {
       response.onError(new IllegalStateException("Not registered"));
       return;
     }
@@ -100,7 +99,7 @@ public class StandaloneSonarLintImpl extends AbstractSonarLint implements Standa
       response.onCompleted();
     } catch (Exception e) {
       logger.error("Error analyzing", e);
-      response.onError(new StatusException(io.grpc.Status.INTERNAL.withDescription(e.getMessage()).withCause(e)));
+      response.onError(e);
     }
   }
 

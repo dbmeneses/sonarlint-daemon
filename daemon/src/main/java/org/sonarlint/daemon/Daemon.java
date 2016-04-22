@@ -21,8 +21,11 @@ package org.sonarlint.daemon;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.ServerInterceptor;
+import io.grpc.ServerInterceptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonarlint.daemon.interceptors.ExceptionInterceptor;
 import org.sonarlint.daemon.services.ConnectedSonarLintImpl;
 import org.sonarlint.daemon.services.StandaloneSonarLintImpl;
 import org.sonarsource.sonarlint.daemon.proto.ConnectedSonarLintGrpc;
@@ -44,9 +47,11 @@ public class Daemon {
   }
 
   public void start() throws IOException, InterruptedException {
+    ServerInterceptor interceptor = new ExceptionInterceptor();
+    
     server = ServerBuilder.forPort(DEFAULT_PORT)
-      .addService(ConnectedSonarLintGrpc.bindService(new ConnectedSonarLintImpl()))
-      .addService(StandaloneSonarLintGrpc.bindService(new StandaloneSonarLintImpl()))
+      .addService(ServerInterceptors.intercept(ConnectedSonarLintGrpc.bindService(new ConnectedSonarLintImpl()), interceptor))
+      .addService(ServerInterceptors.intercept(StandaloneSonarLintGrpc.bindService(new StandaloneSonarLintImpl()), interceptor))
       .build()
       .start();
     logger.info("Server started, listening on " + DEFAULT_PORT);
